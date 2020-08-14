@@ -12,6 +12,63 @@ const render = require("./lib/htmlRenderer");
 
 // FROM HANNAH--const katy = new Manager("katy", 2, "katy@gmail.com", 95);
 
+function managerQuestions() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "manager",
+        message: "What is your manager's name?",
+      },
+      {
+        type: "input",
+        name: "id",
+        message: "What is your manager's ID?",
+      },
+      {
+        type: "input",
+        name: "email",
+        message: "What is your manager's email?",
+      },
+      {
+        type: "input",
+        name: "number",
+        message: "What is your manager's Office Number?",
+      },
+    ])
+    .then(function (data) {
+      const manager = new Manager(
+        data.manager,
+        data.id,
+        data.email,
+        data.number
+      );
+      console.log(manager);
+      askToAddEmployee();
+    });
+}
+
+function askToAddEmployee() {
+  // if yes, ask them engineer or intern?
+  // if engineer, run addEngineer()
+  // if intern run addIntern()
+  // if no, build your team
+}
+
+function addEngineer() {
+  // at the end of this run askToAddEmployee()
+}
+
+function addIntern() {
+  // at the end of this run askToAddEmployee()
+}
+
+function buildTeam() {
+  // feed your employees to the htmlRenderer.js file
+  // fs write file to the output path from line 9
+}
+
+managerQuestions();
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
