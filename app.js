@@ -85,7 +85,7 @@ function createEmployee() {
             createEmployee();
           } else {
             const data = render(employeeArray);
-            fs.writeFile("./output/team.html", data, (err) => {
+            fs.writeFile("./lib/htmlRenderer.js", data, (err) => {
               if (err) {
                 throw err;
               } else {
