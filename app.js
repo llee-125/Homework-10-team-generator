@@ -6,119 +6,95 @@ const path = require("path");
 const fs = require("fs");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
-const outputPath = path.join(OUTPUT_DIR, "team.html");
+const outputPath = path.join(OUTPUT_DIR, "main.html");
 
 const render = require("./lib/htmlRenderer");
 
-function managerQuestions() {
+const employeeArray = [];
+let id = 0;
+
+function createEmployee() {
   inquirer
     .prompt([
       {
-        type: "input",
-        name: "manager",
-        message: "What is your manager's name?",
+        type: "list",
+        name: "type",
+        message: "What type of employee would you like to create?",
+        choices: ["Manager", "Engineer", "Intern"],
       },
       {
         type: "input",
-        name: "id",
-        message: "What is your manager's ID?",
+        name: "Fname",
+        message: "Please enter employee's First Name:",
+      },
+      {
+        type: "input",
+        name: "Lname",
+        message: "Please enter employee's Last Name:",
       },
       {
         type: "input",
         name: "email",
-        message: "What is your manager's email?",
+        message: "Please enter employee's Email:",
       },
       {
         type: "input",
-        name: "number",
-        message: "What is your manager's Office Number?",
+        name: "office",
+        message: "What is the manager's Office Number?",
+        when: (answers) => answers.type === "Manager",
+      },
+      {
+        type: "input",
+        name: "github",
+        message: "Please enter engineer's github User Name.",
+        when: (answers) => answers.type === "Engineer",
+      },
+      {
+        type: "input",
+        name: "school",
+        message: "Enter intern's school name:",
+        when: (answers) => answers.type === "Intern",
       },
     ])
-    .then(function (data) {
-      const manager = new Manager(
-        data.manager,
-        data.id,
-        data.email,
-        data.number
-      );
-      console.log(manager);
-      askToAddEmployee();
+    .then((res) => {
+      if (res.type === "Manager") {
+        employeeArray.push(
+          new Manager(res.Fname, res.Lname, id, res.email, res.office)
+        );
+        id++;
+      } else if (res.type === "Engineer") {
+        employeeArray.push(
+          new Engineer(res.name, res.Lname, id, res.email, res.github)
+        );
+        id++;
+      } else if (res.type === "Intern") {
+        employeeArray.push(
+          new Intern(res.name, res.Lname, id, res.email, res.school)
+        );
+        id++;
+      }
+
+      inquirer
+        .prompt({
+          type: "confirm",
+          name: "addAnother",
+          message: "Would you like to add another employee?",
+        })
+        .then((res) => {
+          if (res.addAnother) {
+            createEmployee();
+          } else {
+            const data = render(employeeArray);
+            fs.writeFile("./output/team.html", data, (err) => {
+              if (err) {
+                throw err;
+              } else {
+                console.log("Saved!");
+              }
+            });
+          }
+        });
     });
 }
 
-function askToAddEmployee() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "employee",
-        message: "What is your employee's name?",
-      },
-      {
-        type: "input",
-        name: "id",
-        message: "What is your employee's ID?",
-      },
-      {
-        type: "input",
-        name: "email",
-        message: "What is your employee's email?",
-      },
-      {
-        type: "input",
-        name: "number",
-        message: "What is your employee's Office Number?",
-      },
-    ])
-    .then(function (data) {
-      const employee = new Employee(
-        data.employee,
-        data.id,
-        data.email,
-        data.number
-      );
-      console.log(employee);
-      askToAddEmployee();
-    });
-  // if yes, ask them engineer or intern?
-  // if engineer, run addEngineer()
-  // if intern run addIntern()
-  // if no, build your team
-}
-
-function addEngineer() {
-  // at the end of this run askToAddEmployee()
-}
-
-function addIntern() {
-  // at the end of this run askToAddEmployee()
-}
-
-function buildTeam() {
-  // feed your employees to the htmlRenderer.js file
-  // fs write file to the output path from line 9
-}
-
-managerQuestions();
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+createEmployee();
