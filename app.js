@@ -10,8 +10,6 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-// FROM HANNAH--const katy = new Manager("katy", 2, "katy@gmail.com", 95);
-
 function managerQuestions() {
   inquirer
     .prompt([
@@ -49,6 +47,39 @@ function managerQuestions() {
 }
 
 function askToAddEmployee() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "employee",
+        message: "What is your employee's name?",
+      },
+      {
+        type: "input",
+        name: "id",
+        message: "What is your employee's ID?",
+      },
+      {
+        type: "input",
+        name: "email",
+        message: "What is your employee's email?",
+      },
+      {
+        type: "input",
+        name: "number",
+        message: "What is your employee's Office Number?",
+      },
+    ])
+    .then(function (data) {
+      const employee = new Employee(
+        data.employee,
+        data.id,
+        data.email,
+        data.number
+      );
+      console.log(employee);
+      askToAddEmployee();
+    });
   // if yes, ask them engineer or intern?
   // if engineer, run addEngineer()
   // if intern run addIntern()
